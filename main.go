@@ -183,7 +183,7 @@ func main() {
 	execDir := filepath.Dir(execPath)
 
 	// Parse command line flags
-	configFile := flag.String("c", filepath.Join(execDir, "config.yml"), "Path to config file")
+	configFile := flag.String("config", filepath.Join(execDir, "config.yml"), "Path to config file")
 	host := flag.String("host", "", "Deluge daemon host")
 	port := flag.Uint("port", 0, "Deluge daemon port")
 	username := flag.String("username", "", "Deluge daemon username")
@@ -219,7 +219,7 @@ func main() {
 
 	// Check required arguments
 	if len(flag.Args()) != 3 {
-		logger.Info("Usage: %s [flags] <torrent_id> <torrent_name> <download_folder>\n\nFlags:\n  -c string\n        Path to config file (default \"config.yml\")\n  -host string\n        Deluge daemon host\n  -password string\n        Deluge daemon password\n  -port uint\n        Deluge daemon port\n  -username string\n        Deluge daemon username", os.Args[0])
+		logger.Info("Usage: %s [flags] <torrent_id> <torrent_name> <download_folder>\n\nFlags:\n  -config string\n        Path to config file (default \"config.yml\")\n  -host string\n        Deluge daemon host\n  -password string\n        Deluge daemon password\n  -port uint\n        Deluge daemon port\n  -username string\n        Deluge daemon username", os.Args[0])
 		os.Exit(1)
 	}
 

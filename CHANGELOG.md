@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.16] - 2024-03-19
+
+### Changed
+- Renamed CLI parameter `-c` to `-config` for better consistency with other parameters
+
 ## [1.0.15] - 2024-03-31
 
 ### Added

@@ -86,13 +86,16 @@ The configuration file supports the following sections:
 
 ### Command-line Flags
 
-The following command-line flags can be used to override the config file settings:
-
-- `-c`: Path to config file (default: config.yml in the same directory as the executable)
+- `-config`: Path to config file (default: "config.yml")
 - `-host`: Deluge daemon host
 - `-port`: Deluge daemon port
 - `-username`: Deluge daemon username
 - `-password`: Deluge daemon password
+
+Example usage with custom config file:
+```bash
+./deluge-reannounce -config /home/user/tools/config.yml -username myuser -password mypass <torrent_id> <torrent_name> <download_folder>
+```
 
 ## Usage
 
@@ -101,11 +104,6 @@ The following command-line flags can be used to override the config file setting
 ```
 
 The `<torrent_id>` is the hash of the torrent you want to reannounce. This is typically a 40-character hexadecimal string.
-
-Example usage with custom config file location and credentials:
-```bash
-./deluge-reannounce -c /home/user/tools/config.yml -username myuser -password mypass <torrent_id> <torrent_name> <download_folder>
-```
 
 ## Logging
 
@@ -134,7 +132,7 @@ The program can be built for any platform that Go supports. The compatibility de
 ## Troubleshooting
 You can check the operation of Deluge's Execute plugin with the bash script available from the [Deluge's official website](https://deluge-torrent.org/plugins/execute/). It can be used to ensure that the Execute plugin is started when a new file is added to the interface.   
 
-Some installations do not allow direct invocation of this program, but require a bash wrapper script. It can be as simple as this
+Some installations do not allow direct invocation of this program, but require a bash wrapper script (e.g., deluge-wrapper.sh). It can be as simple as this
 
 ```bash
 #!/bin/bash
@@ -143,7 +141,7 @@ torrentid=$1
 torrentname=$2
 torrentpath=$3
 
-/home/user/tools/deluge-reannounce -c /home/user/tools/config.yml "$torrentid" "$torrentname" "$torrentpath"
+/home/user/tools/deluge-reannounce -config /home/user/tools/config.yml "$torrentid" "$torrentname" "$torrentpath"
 
 ```
 Save the script to a directory on the server where the Deluge user has permissions, give the file execute permission and point Execute plugin to this script, instead of pointing directly to this program.
