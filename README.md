@@ -33,7 +33,7 @@ CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -o deluge-reanno
 ```
 
 2. Place the executable in a location accessible by Deluge (e.g., `/home/user/tools/deluge-reannounce`)
-3. Make the executable accessible:
+3. Make the file executable:
 ```bash
 chmod +x /home/user/tools/deluge-reannounce
 ```
@@ -104,7 +104,7 @@ The `<torrent_id>` is the hash of the torrent you want to reannounce. This is ty
 
 Example usage with custom config file location and credentials:
 ```bash
-./deluge-reannounce -c /home/blop/tool/config.yml -username myuser -password mypass <torrent_id> <torrent_name> <download_folder>
+./deluge-reannounce -c /home/user/tools/config.yml -username myuser -password mypass <torrent_id> <torrent_name> <download_folder>
 ```
 
 ## Logging
@@ -129,6 +129,29 @@ The program can be built for any platform that Go supports. The compatibility de
 - **Pre-built binaries**: Check the releases page for available platforms
 - **Building from source**: Can be built for any platform supported by Go (Windows, macOS, Linux, etc.)
 - **Deluge requirement**: Deluge 2.0 or later with Execute plugin enabled
+
+
+## Troubleshooting
+You can check the operation of Deluge's Execute plugin with the bash script available from the [Deluge's official website](https://deluge-torrent.org/plugins/execute/). It can be used to ensure that the Execute plugin is started when a new file is added to the interface.   
+
+Some installations do not allow direct invocation of this program, but require a bash wrapper script. It can be as simple as this
+
+```bash
+#!/bin/bash
+
+torrentid=$1
+torrentname=$2
+torrentpath=$3
+
+/home/user/tools/deluge-reannounce -c /home/user/tools/config.yml "$torrentid" "$torrentname" "$torrentpath"
+
+```
+Save the script to a directory on the server where the Deluge user has permissions, give the file execute permission and point Execute plugin to this script, instead of pointing directly to this program.
+
+Make the file executable:
+```bash
+chmod +x /home/user/tools/deluge-wrapper.sh
+```
 
 ## License
 
