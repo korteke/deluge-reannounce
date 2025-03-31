@@ -18,7 +18,7 @@ A command-line tool that forces a reannounce of a torrent in Deluge. This tool i
 
 ## Installation
 
-1. Either download the pre-built binary or build from source:
+- Either download the pre-built binary or build from source
 
 ### Pre-built Binary
 
@@ -91,16 +91,20 @@ The following command-line flags can be used to override the config file setting
 - `-c`: Path to config file (default: config.yml in the same directory as the executable)
 - `-host`: Deluge daemon host
 - `-port`: Deluge daemon port
+- `-username`: Deluge daemon username
+- `-password`: Deluge daemon password
 
 ## Usage
 
 ```bash
-./deluge-reannounce <torrent_id> <torrent_name> <download_folder>
+./deluge-reannounce [flags] <torrent_id> <torrent_name> <download_folder>
 ```
 
-Example usage with custom config file location:
+The `<torrent_id>` is the hash of the torrent you want to reannounce. This is typically a 40-character hexadecimal string.
+
+Example usage with custom config file location and credentials:
 ```bash
-./deluge-reannounce -c /home/blop/tool/config.yml <torrent_id> <torrent_name> <download_folder>
+./deluge-reannounce -c /home/blop/tool/config.yml -username myuser -password mypass <torrent_id> <torrent_name> <download_folder>
 ```
 
 ## Logging
