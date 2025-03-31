@@ -2,7 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.1.1] - 2024-03-19
+## [1.1.2] - 2024-03-31
+
+### Added
+- Torrent status checking after reannounce operation
+- Detailed torrent status logging in DEBUG mode including:
+  - State, progress, download/upload rates
+  - Peer and seed counts
+  - Total size and downloaded amount
+  - ETA and ratio
+  - Tracker status and host
+  - Various timing information
+- Tracker status verification to ensure "Announce OK" status
+
+## [1.1.1] - 2024-03-31
 
 ### Changed
 - Renamed CLI parameter `-c` to `-config` for better consistency with other parameters
@@ -22,7 +35,7 @@ All notable changes to this project will be documented in this file.
 - Better test coverage for edge cases
 - More robust log message verification
 
-## [1.0.14] - 2024-03-21
+## [1.0.14] - 2024-03-31
 
 ### Changed
 - Refactored codebase to follow Go best practices and standards
@@ -40,7 +53,7 @@ All notable changes to this project will be documented in this file.
   - `-password` flag to override config file password
 - Improved usage message with all available flags
 
-## [1.0.12] - 2024-03-21
+## [1.0.12] - 2024-03-31
 
 ### Added
 - Automatic retry mechanism for reannounce operations
@@ -48,13 +61,13 @@ All notable changes to this project will be documented in this file.
 - 120-second maximum timeout for reannounce operations
 - Detailed logging of retry attempts in DEBUG mode
 
-## [1.0.11] - 2024-03-21
+## [1.0.11] - 2024-03-31
 
 ### Added
 - Command-line flag (-c) for specifying custom config file location
 - Improved error messages for config file loading failures
 
-## [1.0.10] - 2024-03-21
+## [1.0.10] - 2024-03-31
 
 ### Added
 - File-based logging system
@@ -68,7 +81,7 @@ All notable changes to this project will be documented in this file.
 - Improved error messages and logging format
 - Added timestamps to log entries
 
-## [1.0.0] - 2024-03-21
+## [1.0.0] - 2024-03-30
 
 ### Added
 - Initial release of the Deluge Reannounce Go program

@@ -145,33 +145,99 @@ func (d *DelugeClient) Close() error {
 }
 
 // ForceReannounce attempts to force reannounce a torrent with retries
-func (d *DelugeClient) ForceReannounce(torrentID string, timeout, interval time.Duration) error {
+func (d *DelugeClient) ForceReannounce(torrentID string, timeout, interval time.Duration) bool {
 	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
 
 	timeoutChan := time.After(timeout)
-	var lastErr error
-	var attempts int
+	attempts := 0
 
 	for {
-		attempts++
 		select {
 		case <-timeoutChan:
-			if lastErr != nil {
-				return fmt.Errorf("failed to force reannounce after %d attempts: %w", attempts, lastErr)
-			}
-			return nil
+			log.Printf("Timeout reached after %v attempts", attempts)
+			return false
 		case <-ticker.C:
-			d.logger.Debug("Attempt %d: Forcing reannounce for torrent %s", attempts, torrentID)
-			if err := d.client.ForceReannounce([]string{torrentID}); err != nil {
-				lastErr = err
-				d.logger.Debug("Attempt %d failed: %v", attempts, err)
+			attempts++
+			log.Printf("Attempt %d: Force reannouncing torrent %s", attempts, torrentID)
+
+			err := d.client.ForceReannounce([]string{torrentID})
+			if err != nil {
+				log.Printf("Error force reannouncing torrent: %v", err)
 				continue
 			}
-			d.logger.Info("Successfully forced reannounce for torrent %s after %d attempts", torrentID, attempts)
-			return nil
+
+			// Wait a bit for the torrent to start updating its status
+			time.Sleep(2 * time.Second)
+
+			// Check torrent status
+			status, err := d.GetTorrentStatus(torrentID)
+			if err != nil {
+				log.Printf("Error getting torrent status: %v", err)
+				continue
+			}
+
+			// Log torrent status
+			log.Printf("Torrent status: State=%s, Progress=%.2f%%, Download Rate=%.2f KB/s, Upload Rate=%.2f KB/s, Peers=%d/%d, Seeds=%d",
+				status.State,
+				status.Progress*100,
+				float64(status.DownloadPayloadRate)/1024,
+				float64(status.UploadPayloadRate)/1024,
+				status.NumPeers,
+				status.TotalPeers,
+				status.TotalSeeds)
+
+			// Check both torrent state and tracker status
+			if (status.State == "Downloading" || status.State == "Seeding") && status.TrackerStatus == "Announce OK" {
+				log.Printf("Successfully reannounced torrent %s (State: %s, Tracker: %s)", torrentID, status.State, status.TrackerStatus)
+				return true
+			}
+
+			log.Printf("Torrent not in desired state yet (current: %s), retrying...", status.State)
 		}
 	}
+}
+
+// GetTorrentStatus gets the status of a torrent
+func (d *DelugeClient) GetTorrentStatus(torrentID string) (*deluge.TorrentStatus, error) {
+	status, err := d.client.TorrentStatus(torrentID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get torrent status: %w", err)
+	}
+
+	// Log detailed torrent information if debug logging is enabled
+	if d.logger.level == "DEBUG" {
+		d.logger.Debug("Torrent Status Details for %s:", torrentID)
+		d.logger.Debug("  Name: %s", status.Name)
+		d.logger.Debug("  State: %s", status.State)
+		d.logger.Debug("  Progress: %.2f%%", status.Progress*100)
+		d.logger.Debug("  Download Rate: %.2f KB/s", float64(status.DownloadPayloadRate)/1024)
+		d.logger.Debug("  Upload Rate: %.2f KB/s", float64(status.UploadPayloadRate)/1024)
+		d.logger.Debug("  Peers: %d/%d", status.NumPeers, status.TotalPeers)
+		d.logger.Debug("  Seeds: %d/%d", status.NumSeeds, status.TotalSeeds)
+		d.logger.Debug("  Total Size: %.2f GB", float64(status.TotalSize)/1024/1024/1024)
+		d.logger.Debug("  Total Done: %.2f GB", float64(status.TotalDone)/1024/1024/1024)
+		d.logger.Debug("  ETA: %.0f seconds", status.ETA)
+		d.logger.Debug("  Ratio: %.2f", status.Ratio)
+		d.logger.Debug("  Is Finished: %v", status.IsFinished)
+		d.logger.Debug("  Is Seed: %v", status.IsSeed)
+		d.logger.Debug("  Private: %v", status.Private)
+		d.logger.Debug("  Save Path: %s", status.SavePath)
+		d.logger.Debug("  Download Location: %s", status.DownloadLocation)
+		d.logger.Debug("  Next Announce: %d seconds", status.NextAnnounce)
+		d.logger.Debug("  Num Pieces: %d", status.NumPieces)
+		d.logger.Debug("  Piece Length: %d bytes", status.PieceLength)
+		d.logger.Debug("  Seeding Time: %d seconds", status.SeedingTime)
+		d.logger.Debug("  Active Time: %d seconds", status.ActiveTime)
+		d.logger.Debug("  Completed Time: %d seconds", status.CompletedTime)
+		d.logger.Debug("  Time Added: %.0f seconds", status.TimeAdded)
+		d.logger.Debug("  Last Seen Complete: %.0f seconds", status.LastSeenComplete)
+		d.logger.Debug("  Distributed Copies: %.2f", status.DistributedCopies)
+		d.logger.Debug("  Tracker Host: %s", status.TrackerHost)
+		d.logger.Debug("  Tracker Status: %s", status.TrackerStatus)
+	}
+
+	return status, nil
 }
 
 func main() {
@@ -259,10 +325,10 @@ func main() {
 	timeout := time.Duration(config.Retry.Timeout) * time.Second
 	interval := time.Duration(config.Retry.Interval) * time.Second
 
-	if err := client.ForceReannounce(torrentID, timeout, interval); err != nil {
-		logger.Error("Failed to force reannounce: %v", err)
-		os.Exit(1)
+	if client.ForceReannounce(torrentID, timeout, interval) {
+		os.Exit(0)
 	}
 
-	os.Exit(0)
+	logger.Error("Failed to force reannounce")
+	os.Exit(1)
 }

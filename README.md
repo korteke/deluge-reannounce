@@ -99,6 +99,12 @@ Example usage with custom config file:
 
 ## Usage
 
+Make sure that the file is executable
+
+```bash
+chmod +x deluge-reannounce
+```
+
 ```bash
 ./deluge-reannounce [flags] <torrent_id> <torrent_name> <download_folder>
 ```

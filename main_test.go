@@ -196,9 +196,9 @@ func TestDelugeClient(t *testing.T) {
 	// Test ForceReannounce with a short timeout
 	timeout := 2 * time.Second
 	interval := 100 * time.Millisecond
-	err = client.ForceReannounce("test-torrent-id", timeout, interval)
-	if err != nil {
-		t.Logf("Note: ForceReannounce test skipped as Deluge daemon is not running: %v", err)
+	success := client.ForceReannounce("test-torrent-id", timeout, interval)
+	if !success {
+		t.Logf("Note: ForceReannounce test skipped as Deluge daemon is not running")
 	}
 }
 
