@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.14] - 2024-03-21
+
+### Changed
+- Refactored codebase to follow Go best practices and standards
+- Improved error handling with proper error wrapping using `fmt.Errorf` and `%w` verb
+- Enhanced logging system with better level control and message formatting
+- Created `DelugeClient` struct to encapsulate Deluge-related functionality
+- Improved command-line flag handling and configuration management
+- Added comprehensive documentation for all types and functions
+- Optimized resource management with proper use of `defer`
+- Improved code organization and separation of concerns
+
+### Added
+- Command-line flags for Deluge daemon credentials
+  - `-username` flag to override config file username
+  - `-password` flag to override config file password
+- Improved usage message with all available flags
+
 ## [1.0.12] - 2024-03-21
 
 ### Added
