@@ -1,0 +1,13 @@
+deluge:
+  hostname: "127.0.0.1"
+  port: 58846
+  login: "localclient"
+  password: "deluge"
+
+logging:
+  file: "deluge-reannounce.log"
+  level: "INFO"  # Can be "INFO" or "DEBUG"
+
+retry:
+  timeout: 120   # Maximum time to wait for successful reannounce (in seconds)
+  interval: 7    # Time between reannounce attempts (in seconds) 
