@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.15] - 2024-03-31
+
+### Added
+- Comprehensive unit test suite
+  - Configuration loading and validation tests
+  - Logging system tests with file and message verification
+  - Deluge client functionality tests with error handling
+  - Default configuration value tests
+
+### Changed
+- Improved error handling in tests with proper cleanup
+- Enhanced test isolation using t.TempDir()
+- Better test coverage for edge cases
+- More robust log message verification
+
 ## [1.0.14] - 2024-03-21
 
 ### Changed
